@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { GENRES } from "../types/movie";
+import {useState} from "react";
+import {GENRES} from "../types/movie";
 
 type SearchBarProps = {
-  onSearch: (search: string) => void;
-  onGenreChange: (genre: string) => void;
+    onSearch: (search: string) => void;
+    onGenreChange: (genre: string) => void;
 };
 
 // =============================================================
@@ -24,38 +24,38 @@ type SearchBarProps = {
 //    la bonne valeur à chaque changement
 //
 
-export const SearchBar = ({ onSearch, onGenreChange }: SearchBarProps) => {
-  const [search, setSearch] = useState("");
-  let genre = "";
+export const SearchBar = ({onSearch, onGenreChange}: SearchBarProps) => {
+    const [search, setSearch] = useState("");
+    const [genre, setGenre] = useState("");
 
-  return (
-    <div className="flex gap-4 mb-6">
-      <input
-        type="text"
-        value={search}
-        placeholder="Rechercher un film..."
-        onChange={(e) => {
-          const value = e.target.value;
-          setSearch(value);
-          onSearch(value);
-        }}
-        className="flex-1 px-4 py-2 border rounded-lg"
-      />
-      <select
-        value={genre}
-        onChange={(e) => {
-          genre = e.target.value;
-          onGenreChange(genre);
-        }}
-        className="px-4 py-2 border rounded-lg"
-      >
-        <option value="">Tous les genres</option>
-        {GENRES.map((g) => (
-          <option key={g} value={g}>
-            {g}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+    return (
+        <div className="flex gap-4 mb-6">
+            <input
+                type="text"
+                value={search}
+                placeholder="Rechercher un film..."
+                onChange={(e) => {
+                    const value = e.target.value;
+                    setSearch(value);
+                    onSearch(value);
+                }}
+                className="flex-1 px-4 py-2 border rounded-lg"
+            />
+            <select
+                value={genre}
+                onChange={(e) => {
+                    setGenre(e.target.value)
+                    onGenreChange(e.target.value);
+                }}
+                className="px-4 py-2 border rounded-lg"
+            >
+                <option value="">{genre == "" ? 'Tous les genres' : genre}</option>
+                {GENRES.map((g) => (
+                    <option key={g} value={g}>
+                        {g}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
 };

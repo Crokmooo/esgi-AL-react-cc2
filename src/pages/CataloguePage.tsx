@@ -1,9 +1,8 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../services/api";
-import type { Movie } from "../types/movie";
-import { MovieCard } from "../components/MovieCard";
-import { SearchBar } from "../components/SearchBar";
+import {useState} from "react";
+import {useQuery} from "@tanstack/react-query";
+import type {Movie} from "../types/movie";
+import {MovieCard} from "../components/MovieCard";
+import {SearchBar} from "../components/SearchBar";
 
 // =============================================================
 // EXERCICE 2 — CataloguePage (8 pts)
@@ -29,18 +28,39 @@ import { SearchBar } from "../components/SearchBar";
 //    le composant MovieCard (penser à la prop key)
 //
 
+const API_URL = "/api/movies?";
+
 export const CataloguePage = () => {
-  const [search, setSearch] = useState("");
-  const [genre, setGenre] = useState("");
+    const [search, setSearch] = useState("");
+    const [genre, setGenre] = useState("");
 
-  // TODO : écrire le useQuery ici
+    const {data, error, isLoading} = useQuery<Movie[]>({
+        queryKey: ["movies", search, genre],
+        queryFn: async () => {
+            const response = await fetch(`${API_URL}search=${search}&genre=${genre}`);
+            if (!response.ok) throw new Error("Erreur HTTP");
 
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Catalogue</h1>
-      <SearchBar onSearch={setSearch} onGenreChange={setGenre} />
+            return response.json();
+        },
+    });
 
-      {/* TODO : afficher loading, error, et la liste de films */}
-    </div>
-  );
+    return (
+        <div>
+            <h1 className="text-2xl font-bold mb-6">Catalogue</h1>
+            <SearchBar onSearch={setSearch} onGenreChange={setGenre}/>
+
+            {isLoading && <p>Chargement.......</p>}
+            {error && <p>Erreur lors du chargement des films.</p>}
+
+            {!isLoading && data?.length === 0 ? (
+                <p>Aucun film trouvé.</p>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {data?.map((movie) => (
+                        <MovieCard key={movie.id} movie={movie} />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 };

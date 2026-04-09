@@ -1,7 +1,7 @@
-import { useParams } from "react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../services/api";
-import type { Movie } from "../types/movie";
+import {useParams} from "react-router";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {api} from "../services/api";
+import type {Movie} from "../types/movie";
 
 // =============================================================
 // EXERCICE 3 — MovieDetailPage (8 pts)
@@ -37,5 +37,46 @@ import type { Movie } from "../types/movie";
 //
 
 export const MovieDetailPage = () => {
-  return <div>TODO : compléter cette page</div>;
+    const params = useParams();
+    const queryClient = useQueryClient();
+
+    const {data} = useQuery<Movie>({
+        queryKey: ["movie", params.id],
+        queryFn: () => api.get(`/movies/${params.id}`),
+    });
+
+    const toggleMutation = useMutation({
+        mutationFn: () => api.post(`/movies/${params.id}/toggle-watched`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["movie", params.id] });
+        },
+    });
+
+    if (!data) return null;
+
+
+    return (
+        <div className="max-w-2xl mx-auto">
+            <div>
+                <img
+                    src={data.imageUrl}
+                    alt={data.title}
+                    className="w-full h-64 object-cover rounded-lg"
+                />
+
+                <h1 className="text-3xl font-bold mt-4">{data.title}</h1>
+                <h2 className="text-gray-600 mt-1">{data.director} - {data.year} - {data.genre}</h2>
+                <p>{data.description}</p>
+            </div>
+            <button
+                onClick={() => toggleMutation.mutate()}
+                disabled={toggleMutation.isPending}
+                className={`mt-4 px-4 py-2 rounded-lg text-white ${
+                    data.watched ? "bg-gray-500" : "bg-green-600"}`}>
+                {toggleMutation.isPending
+                    ? "Chargement..."
+                    : data.watched ? "Marquer comme non vu" : "Marquer comme vu"}
+            </button>
+
+        </div>);
 };
