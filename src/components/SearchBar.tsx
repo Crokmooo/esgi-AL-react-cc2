@@ -49,7 +49,7 @@ export const SearchBar = ({onSearch, onGenreChange}: SearchBarProps) => {
                 }}
                 className="px-4 py-2 border rounded-lg"
             >
-                <option value="">{genre == "" ? 'Tous les genres' : genre}</option>
+                <option value="">Tous les genres</option>
                 {GENRES.map((g) => (
                     <option key={g} value={g}>
                         {g}
